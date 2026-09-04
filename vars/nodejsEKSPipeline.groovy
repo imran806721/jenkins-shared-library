@@ -10,6 +10,7 @@ def call (Map configMap){
         acc_id = "970361933543"
         project = configMap.get("project")
         component = configMap.get("component")
+        org = "imran806721"
        }
 
        options {
@@ -77,8 +78,8 @@ def call (Map configMap){
                     sh '''
                         set -e
 
-                        REPO="imran806721/catalogue"
-
+                        REPO="${org}/${component}"
+                        
                         curl -s -L \
                         -H "Accept: application/vnd.github+json" \
                         -H "Authorization: Bearer ${GH_TOKEN}" \
