@@ -182,4 +182,3 @@ def call (Map configMap){
         }
       }
     }
-}
