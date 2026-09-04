@@ -1,22 +1,23 @@
-pipeline {
-    agent {
+def call (Map configMap){
+    pipeline {
+      agent {
         node {
             label 'ROBOSHOP'
         }
-    }
-    environment {
+      }
+      environment {
         def appVersion = ""
         acc_id = "970361933543"
         project = configMap.get("project")
         component = configMap.get("component")
-    }
+       }
 
-    options {
+       options {
         disableConcurrentBuilds()
         timeout(time: 15, unit: 'MINUTES')
-    }
+      }
 
-    stages {
+      stages {
         stage('Read version') {
             steps {
                 script {
@@ -42,11 +43,11 @@ pipeline {
             steps {
                 script {
                     sh """
-                        echo "No unit tests configured for catalogue"
+                        echo "No unit tests configured for ${component}"
                    """
                 }
             }
-      }
+        }
 
         /* stage('SonarQube Analysis') {
             steps {
@@ -165,9 +166,9 @@ pipeline {
                 }
             }
         }
-    }
+      }
 
-    post {
+      post {
         always {
             echo 'I will always say Hello again!'
         }
@@ -179,5 +180,6 @@ pipeline {
         failure {
             echo 'I will Run when it is failed'
         }
+      }
     }
 }
