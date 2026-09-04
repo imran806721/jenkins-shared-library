@@ -7,8 +7,8 @@ pipeline {
     environment {
         def appVersion = ""
         acc_id = "970361933543"
-        project = "roboshop"
-        component = "catalogue"
+        project = configMap.get("project")
+        component = configMap.get("component")
     }
 
     options {
