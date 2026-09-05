@@ -40,15 +40,21 @@ def call (Map configMap){
             }
         }
 
-        stage('Unit tests') {
-            steps {
-                script {
-                    sh """
-                        echo "No unit tests configured for ${component}"
-                   """
+        stage('unit-tests') {
+                steps {
+                    script {
+                        try {
+                            sh """
+                                npm test
+                            """
+                            utils.updateCommitStatus('SUCCESS', 'Unit tests passed', 'unit-tests')
+                        } catch (Exception e) {
+                            utils.updateCommitStatus('FAILURE', 'Unit tests failed', 'unit-tests')
+                            throw e
+                        }
+                    } 
                 }
             }
-        }
 
         /* stage('SonarQube Analysis') {
             steps {
@@ -79,7 +85,7 @@ def call (Map configMap){
                         set -e
 
                         REPO="${org}/${component}"
-                        
+
                         curl -s -L \
                         -H "Accept: application/vnd.github+json" \
                         -H "Authorization: Bearer ${GH_TOKEN}" \
