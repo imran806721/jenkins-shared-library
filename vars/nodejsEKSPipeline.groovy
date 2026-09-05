@@ -40,22 +40,15 @@ def call (Map configMap){
             }
         }
 
-        stage('unit-tests') {
-                steps {
-                    script {
-                        try {
-                            sh """
-                                npm test
-                            """
-                            utils.updateCommitStatus('SUCCESS', 'Unit tests passed', 'unit-tests')
-                        } catch (Exception e) {
-                            utils.updateCommitStatus('FAILURE', 'Unit tests failed', 'unit-tests')
-                            throw e
-                        }
-                    } 
+       stage('unit tests') {
+            steps {
+                script {
+                    sh """
+                        npm test
+                    """
                 }
             }
-
+        }
         /* stage('SonarQube Analysis') {
             steps {
                 // 'My SonarQube Server' must match the name configured in Jenkins System Settings
