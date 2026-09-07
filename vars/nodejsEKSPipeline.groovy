@@ -44,7 +44,7 @@ def call (Map configMap){
             steps {
                 script {
                     sh """
-                        echo "No unit tests configured for catalogue"
+                        echo "npm test"
                     """
                 }
             }
