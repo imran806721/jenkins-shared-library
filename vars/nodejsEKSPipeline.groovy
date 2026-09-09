@@ -196,7 +196,7 @@ def call (Map configMap){
                           -f values-dev.yaml \
                           -n roboshop-dev \
                           --create-namespace \
-                          --set deployment.imageVersion=${env.appVersion} \
+                          --set deployment.imageVersion=${appVersion} \
                           --wait \
                           --timeout 5m
 
