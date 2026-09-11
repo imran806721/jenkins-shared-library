@@ -213,8 +213,8 @@ def call (Map configMap){
                     'Deployed to roboshop-dev',
                     'dev-deploy'
                 )
-
-                }catch (Exception e) {
+                       }
+                catch (Exception e) {
 
                 utils.updateCommitStatus(
                     'failure',
