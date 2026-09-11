@@ -181,7 +181,7 @@ def call (Map configMap){
         //         }
         //     }
         // }
-        ```groovy
+        /* ```groovy
         stage('Deploy') {
                 steps {
                     script {
@@ -226,7 +226,54 @@ def call (Map configMap){
                 }
                     }
                 }
-        }
+        } */
+
+        
+        stage('Deploy') {
+            steps {
+                script {
+                    try {
+                        withAWS(credentials: 'aws-cred', region: 'us-east-1') {
+                    sh """
+                            aws eks update-kubeconfig \
+                              --name roboshop \
+                              --region us-east-1
+
+                            cd helm
+
+                            helm upgrade --install ${component} . \
+                              -f values-dev.yaml \
+                              -n roboshop-dev \
+                              --create-namespace \
+                              --set deployment.imageVersion=${appVersion} \
+                              --wait \
+                              --timeout 5m
+
+                            kubectl rollout status deployment/${component} \
+                              -n roboshop-dev \
+                              --timeout=120s
+                    """
+                        }
+
+                        utils.updateCommitStatus(
+                          'success',
+                          'Deployed to roboshop-dev',
+                          'dev-deploy'
+                        )   
+
+                    } catch (Exception e) {
+
+                        utils.updateCommitStatus(
+                          'failure',
+                          'Deploy to roboshop-dev failed',
+                          'dev-deploy'
+                        )
+
+                throw e
+                    }
+               }
+           }
+    }
         stage('api-tests') {
                 steps {
                     script {
