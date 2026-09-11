@@ -274,7 +274,7 @@ def call (Map configMap){
                }
            }
     }
-       /*  stage('api-tests') {
+        stage('api-tests') {
                 steps {
                     script {
                         try {
@@ -291,7 +291,7 @@ def call (Map configMap){
                     }
                 }
         }
- */
+ 
 
     }
 
