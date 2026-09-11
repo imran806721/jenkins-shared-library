@@ -181,30 +181,32 @@ def call (Map configMap){
         //         }
         //     }
         // }
-
+        ```groovy
         stage('Deploy') {
-    steps {
-        script {
-            try {
-                withAWS(credentials: 'aws-cred', region: 'us-east-1') {
-                    sh """
-                        aws eks update-kubeconfig --name roboshop --region us-east-1
+                steps {
+                    script {
+                       try {
+                           withAWS(credentials: 'aws-cred', region: 'us-east-1') {
+                                sh """
+                                    aws eks update-kubeconfig \
+                                       --name roboshop \
+                                       --region us-east-1
 
-                        cd helm
+                                    cd helm
 
-                        helm upgrade --install ${component} . \
-                          -f values-dev.yaml \
-                          -n roboshop-dev \
-                          --create-namespace \
-                          --set deployment.imageVersion=${appVersion} \
-                          --wait \
-                          --timeout 5m
+                                    helm upgrade --install ${component} . \
+                                       -f values-dev.yaml \
+                                       -n roboshop-dev \
+                                       --create-namespace \
+                                       --set deployment.imageVersion=${appVersion} \
+                                       --wait \
+                                       --timeout 5m
 
-                        kubectl rollout status deployment/${component} \
-                          -n roboshop-dev \
-                          --timeout=120s
-                    """
-                }
+                                    kubectl rollout status deployment/${component} \
+                                       -n roboshop-dev \
+                                       --timeout=120s
+                               """
+                        }
 
                 utils.updateCommitStatus(
                     'success',
@@ -212,18 +214,19 @@ def call (Map configMap){
                     'dev-deploy'
                 )
 
-            } catch (Exception e) {
+                }catch (Exception e) {
+
                 utils.updateCommitStatus(
                     'failure',
                     'Deploy to roboshop-dev failed',
                     'dev-deploy'
                 )
-                throw e
-            }
-        }
-    }
-}
 
+                throw e
+                }
+                    }
+                }
+        }
         stage('api-tests') {
                 steps {
                     script {
