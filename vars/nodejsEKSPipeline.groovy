@@ -71,7 +71,7 @@ def call (Map configMap){
             }
         } */
 
-        stage('Check Dependabot Alerts') {
+        stage('library-scan') {
             steps {
                 withCredentials([string(credentialsId: 'github-token', variable: 'GH_TOKEN')]) {
                     sh '''
@@ -104,7 +104,7 @@ def call (Map configMap){
             }
         }
 
-        stage('Docker Build') {
+        stage('Build-image') {
             steps {
                 script {
                     // Initialize the AWS context using your Jenkins credential ID
