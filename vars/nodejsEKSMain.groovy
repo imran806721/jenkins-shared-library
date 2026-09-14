@@ -121,9 +121,28 @@ def call (Map configMap){
                     }
                 }
             }
-  
 
-    }
+            stage('promote-image') {
+                when {
+                    expression { env_ENVIRONMENT == 'dev' }
+                }
+                steps {
+                    script {
+                        try {
+                            withAWS(credentials: 'aws-cred', region: 'us-east-1') {
+                                sh """
+                                    aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${acc_id}.dkr.ecr.us-east-1.amazonaws.com
+
+                                    docker pull ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion}
+                                    docker tag ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${appVersion} ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${env.GIT_COMMIT}
+                                    docker push ${acc_id}.dkr.ecr.us-east-1.amazonaws.com/${project}/${component}:${env.GIT_COMMIT}
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
       post {
         always {
