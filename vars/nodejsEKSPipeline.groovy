@@ -40,7 +40,7 @@ def call (Map configMap){
             }
         }
 
-       stage('unit test') {
+       stage('unit tests') {
             steps {
                 script {
                     sh """
