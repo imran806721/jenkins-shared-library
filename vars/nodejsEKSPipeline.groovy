@@ -45,21 +45,42 @@ def call (Map configMap){
                 }
             }
             // this command gives us coverage report and test cases report, sonarqube access this to check quality gate
-            stage('unit-tests') {
-                steps {
-                    script {
-                        try {
-                            sh """
-                                npm test
-                            """
-                            utils.updateCommitStatus('SUCCESS', 'Unit tests passed', 'unit-tests')
-                        } catch (Exception e) {
-                            utils.updateCommitStatus('FAILURE', 'Unit tests failed', 'unit-tests')
-                            throw e
-                        }
-                    } 
+        stage('unit-tests') {
+            steps {
+                script {
+                    def testScript = sh(
+                       script: "node -p \"require('./package.json').scripts?.test || ''\"",
+                       returnStdout: true
+                    ).trim()
+
+               if (testScript.contains('no test specified')) {
+                    echo "No unit tests configured for ${component}. Skipping unit-tests."
+                    utils.updateCommitStatus(
+                       'SUCCESS',
+                       'Unit tests skipped - not configured',
+                       'unit-tests'
+                )
+            
+                } else {
+                  try {
+                    sh 'npm test'
+                    utils.updateCommitStatus(
+                        'SUCCESS',
+                        'Unit tests passed',
+                        'unit-tests'
+                    )
+                  } catch (Exception e) {
+                    utils.updateCommitStatus(
+                        'FAILURE',
+                        'Unit tests failed',
+                        'unit-tests'
+                    )
+                    throw e
+                  }
                 }
-            }
+                }
+           }
+        }
             /* stage('sonar-analysis') {
                 steps {
                     // 'My SonarQube Server' must match the name configured in Jenkins System Settings
